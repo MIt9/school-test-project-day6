@@ -1,7 +1,7 @@
 var Memcached = require("memcached"),
     config = require("config"),
 
-    memcachedClient = new Memcached('localhost:11211');
+    memcachedClient = new Memcached('localhost:11211',{retries:10,retry:10000,remove:true,failOverServers:['127.0.0.1:11211']});
    /* memcachedClient = new Memcached(
         config.memcached.port,
         config.memcached.host,
@@ -19,7 +19,7 @@ module.exports = {
     get: function (key) {
         var deferred = Q.defer();
 
-        memcachedClient.gets(key, function (err, result) {
+        memcachedClient.get(key, function (err, result) {
             if (err) {
                 deferred.reject(err);
             } else {
@@ -40,10 +40,11 @@ module.exports = {
     set: function (key, value, ttl) {
         var deferred = Q.defer();
        // memcached.set('foo', 'bar', 10, function (err) { /* stuff */ });
-        memcachedClient.set(key, value, ttl, function (err) {
+        memcachedClient.set(key, value, ttl, function (err,result) {
             if (err) {
                 deferred.reject(err);
             } else {
+                deferred.resolve(result);
               /*  memcachedClient.expire(key, ttl, function (err, result) {
                     if (err) {
                         deferred.reject(err);
