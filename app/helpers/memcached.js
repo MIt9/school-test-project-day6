@@ -1,10 +1,6 @@
-var memcache = require("memcache"),
+var Memcached = require("memcached"),
     config = require("config"),
-    client = memcache.createClient(
-        config.memcache.port,
-        config.memcache.host,
-        {}
-    ),
+    memcachedClient = new Memcached('127.0.0.1:11211');
     Q = require("q");
 
 
@@ -18,7 +14,7 @@ module.exports = {
     get: function (key) {
         var deferred = Q.defer();
 
-        client.get(key, function (err, result) {
+        memcachedClient.get(key, function (err, result) {
             if (err) {
                 deferred.reject(err);
             } else {
@@ -39,11 +35,11 @@ module.exports = {
     set: function (key, value, ttl) {
         var deferred = Q.defer();
 
-        client.set(key, value, function (err, result) {
+        memcachedClient.set(key, value, function (err, result) {
             if (err) {
                 deferred.reject(err);
             } else {
-                client.expire(key, ttl, function (err, result) {
+                memcachedClient.expire(key, ttl, function (err, result) {
                     if (err) {
                         deferred.reject(err);
                     } else {
@@ -64,7 +60,7 @@ module.exports = {
     delete: function (key) {
         var deferred = Q.defer();
 
-        client.del(key, function (err, result) {
+        memcachedClient.del(key, function (err, result) {
             if (err) {
                 deferred.reject(err);
             } else {
