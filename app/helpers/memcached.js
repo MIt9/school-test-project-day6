@@ -1,6 +1,9 @@
 var Memcached = require("memcached"),
     config = require("config"),
-    memcachedClient = new Memcached('127.0.0.1:11211');
+    memcachedClient = new Memcached(
+        config.memcached.port,
+        config.memcached.host,
+        {});
     Q = require("q");
 
 
