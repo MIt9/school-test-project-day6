@@ -1,9 +1,11 @@
 var Memcached = require("memcached"),
     config = require("config"),
-    memcachedClient = new Memcached(
+
+    memcachedClient = new Memcached('localhost:11211');
+   /* memcachedClient = new Memcached(
         config.memcached.port,
         config.memcached.host,
-        {});
+        {});*/
     Q = require("q");
 
 
@@ -17,7 +19,7 @@ module.exports = {
     get: function (key) {
         var deferred = Q.defer();
 
-        memcachedClient.get(key, function (err, result) {
+        memcachedClient.gets(key, function (err, result) {
             if (err) {
                 deferred.reject(err);
             } else {
@@ -37,18 +39,18 @@ module.exports = {
      */
     set: function (key, value, ttl) {
         var deferred = Q.defer();
-
-        memcachedClient.set(key, value, function (err, result) {
+       // memcached.set('foo', 'bar', 10, function (err) { /* stuff */ });
+        memcachedClient.set(key, value, ttl, function (err) {
             if (err) {
                 deferred.reject(err);
             } else {
-                memcachedClient.expire(key, ttl, function (err, result) {
+              /*  memcachedClient.expire(key, ttl, function (err, result) {
                     if (err) {
                         deferred.reject(err);
                     } else {
                         deferred.resolve(result);
                     }
-                });
+                });*/
             }
         });
 
@@ -63,11 +65,11 @@ module.exports = {
     delete: function (key) {
         var deferred = Q.defer();
 
-        memcachedClient.del(key, function (err, result) {
+        memcachedClient.del(key, function (err) {
             if (err) {
                 deferred.reject(err);
             } else {
-                deferred.resolve(result);
+                //deferred.resolve(result);
             }
         });
 
